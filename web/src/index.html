@@ -8,34 +8,22 @@
       table, th, td {
         border: 1px solid black;
       }
+
+      * {
+        font-family: monospace;
+      }
+
+      td {
+        padding: 5px;
+      }
     </style>
   </head>
   <body>
     <h1>Groth16 proof generation</h1>
+    <p>Note that this tool doesn't measure the time it takes to download the WASM and zkey files.</p>
+    <p>Proof generation times are averaged over 3 runs. A slight warmup time (0.1s) tends to be incurred upon the first run.</p>
 
-    <table>
-      <thead>
-        <tr>
-          <th># constraints</th>
-          <th></th>
-          <th>Time</th>
-          <th>Valid?</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1024</td>
-          <td>
-          <button id="gen_proof_1024">Generate proof</button>
-          </td>
-          <td>
-            <pre class="time">Time taken: <code id="time_1024"></code></pre>
-          </td>
-          <td>
-            <pre><code id="valid_1024"></code></pre>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- To be generated in app.ts -->
+    <div id="main"></div>
   </body>
 </html>

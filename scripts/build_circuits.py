@@ -3,7 +3,7 @@
 import os
 
 start = 10 # inclusive
-end = 12 # not inclusive
+end = 17 # not inclusive
 
 def gen_build_dir_path():
     current_dir = os.path.dirname(os.path.abspath(__file__))

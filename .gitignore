@@ -1,0 +1,6 @@
+web/dist/
+web/static/
+.parcel-cache/
+*.ptau
+node_modules/
+build/

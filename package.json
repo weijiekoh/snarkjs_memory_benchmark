@@ -1,0 +1,14 @@
+{
+  "name": "snarkjs_memory_benchmark",
+  "version": "1.0.0",
+  "main": "build/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Koh Wei Jie",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "snarkjs": "0.7.5"
+  }
+}

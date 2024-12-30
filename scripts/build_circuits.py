@@ -3,7 +3,7 @@
 import os
 
 start = 10 # inclusive
-end = 11 # not inclusive
+end = 17 # not inclusive
 
 def gen_build_dir_path():
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -116,10 +116,6 @@ if __name__ == '__main__':
         # Groth16 setup
         setup_cmd = f"npx snarkjs groth16 setup {r1cs_filepath} {ppot_filepath} {zkey_filepath}"
         os.system(setup_cmd)
-
-        # Rename the WASM file
-        rename_wasm_cmd = f"mv {build_dir_path}/main_{num_constraints}_js/main_{num_constraints}.wasm {build_dir_path}/main_{num_constraints}_js/main_{num_constraints}.groth16.wasm"
-        os.system(rename_wasm_cmd)
 
         # Generate the Groth16 verification key
         vkey_cmd = f"npx snarkjs zkey export verificationkey {zkey_filepath} {vkey_filepath}"

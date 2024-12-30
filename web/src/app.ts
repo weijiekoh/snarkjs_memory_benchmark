@@ -2,8 +2,14 @@ import * as builder from './witness_calculator'
 import { groth16, plonk } from 'snarkjs'
 
 const numRuns = 3
+const start = 10
+const end = 17
 
-const staticPath = 'http://127.0.0.1:8000'
+let staticPath = '/static/'
+if (process.env.NODE_ENV !== 'production') {
+    staticPath = 'http://localhost:8000/'
+}
+
 
 const round = (num: number, precision: number) => {
     const factor = 10 ** precision
@@ -153,9 +159,6 @@ const main = async () => {
     th2.innerHTML = "Groth16 valid?"
     theadTr.appendChild(th2)
     thead.appendChild(theadTr)
-
-    const start = 10
-    const end = 17
 
     const tbody = document.createElement("tbody")
     table.appendChild(tbody)

@@ -3,7 +3,7 @@
 import os
 
 start = 10 # inclusive
-end = 17 # not inclusive
+end = 20 # not inclusive
 
 def gen_build_dir_path():
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -62,13 +62,13 @@ def gen_main_circom_filename(num_constraints):
 def gen_main_circom_code(num_constraints):
     return f"""
 pragma circom 2.0.0;
-include "multiplier.circom";
-component main = Multiplier({num_constraints});
+include "fib.circom";
+component main = Fib({num_constraints});
 """.strip() + "\n"
 
 def gen_ppot_filepath():
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(current_dir, "..", "powersOfTau28_hez_final_17.ptau")
+    return os.path.join(current_dir, "..", "powersOfTau28_hez_final_21.ptau")
 
 if __name__ == '__main__':
     build_dir_path = gen_build_dir_path()
@@ -121,10 +121,10 @@ if __name__ == '__main__':
         vkey_cmd = f"npx snarkjs zkey export verificationkey {zkey_filepath} {vkey_filepath}"
         os.system(vkey_cmd)
 
-        # Plonk setup
-        plonk_setup_cmd = f"npx snarkjs plonk setup {r1cs_filepath} {ppot_filepath} {plonk_zkey_filepath}"
-        os.system(plonk_setup_cmd)
+        # # Plonk setup
+        # plonk_setup_cmd = f"npx snarkjs plonk setup {r1cs_filepath} {ppot_filepath} {plonk_zkey_filepath}"
+        # os.system(plonk_setup_cmd)
 
-        # Generate the Plonk verification key
-        plonk_vkey_cmd = f"npx snarkjs zkey export verificationkey {plonk_zkey_filepath} {plonk_vkey_filepath}"
-        os.system(plonk_vkey_cmd)
+        # # Generate the Plonk verification key
+        # plonk_vkey_cmd = f"npx snarkjs zkey export verificationkey {plonk_zkey_filepath} {plonk_vkey_filepath}"
+        # os.system(plonk_vkey_cmd)

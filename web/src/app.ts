@@ -1,19 +1,25 @@
 import * as builder from './witness_calculator'
-import { groth16, plonk } from 'snarkjs'
+import { groth16 } from 'snarkjs'
 
-const numRuns = 3
+const numRuns = 1
 const start = 10
-const end = 17
+const end = 20
 
 let staticPath = '/static/'
 if (process.env.NODE_ENV !== 'production') {
-    staticPath = 'http://localhost:8000/'
+    staticPath = 'http://localhost:8000'
 }
-
 
 const round = (num: number, precision: number) => {
     const factor = 10 ** precision
     return Math.round(num * factor) / factor
+}
+
+const setBtnStatus = (enabled: boolean) => {
+    const genProofBtns = document.getElementsByClassName('gen_proof_btn')
+    for (let i = 0; i < genProofBtns.length; i++) {
+        genProofBtns[i].disabled = !enabled 
+    }
 }
 
 const calculateProofs = async (
@@ -23,29 +29,40 @@ const calculateProofs = async (
     const wasmPath = `${staticPath}/main_${size}_js/main_${size}.wasm`
     const vkPath = `${staticPath}/main_${size}.vkey`
 
-    const plonkZkeyPath = `${staticPath}/main_${size}.plonk.zkey`
-    const plonkVkPath = `${staticPath}/main_${size}.plonk.vkey`
-
-    // Fetch the zkey and wasm files, and convert them into array buffers
+    const wasmSizeComponent = document.getElementById('wasm_size_' + size)
+    wasmSizeComponent.innerHTML = "Downloading..."
     let resp = await fetch(wasmPath)
     const wasmBuff = await resp.arrayBuffer()
+    const wasmMb = wasmBuff.byteLength / 1024 / 1024
+    wasmSizeComponent.innerHTML = round(wasmMb, 2).toString()
+
+    const zkeySizeComponent = document.getElementById('zkey_size_' + size)
+    zkeySizeComponent.innerHTML = "Downloading..."
     resp = await fetch(groth16ZkeyPath)
     const zkeyBuff = await resp.arrayBuffer()
-    resp = await fetch(plonkZkeyPath)
-    const plonkZkeyBuff = await resp.arrayBuffer()
-
-    const wasmKb = wasmBuff.byteLength / 1024
-    const zkeyKb = zkeyBuff.byteLength / 1024
-    const plonkZkeyKb = plonkZkeyBuff.byteLength / 1024
+    const zkeyMb = zkeyBuff.byteLength / 1024 / 1024
+    zkeySizeComponent.innerHTML = round(zkeyMb, 2).toString()
 
     const circuitInputs = {
         a: BigInt('1'),
         b: BigInt('1'),
     }
 
+    const startWitnessCalc = Date.now()
+    for (let i = 1; i < numRuns; i++) {
+        const witnessCalculator = await builder(wasmBuff)
+        await witnessCalculator.calculateWTNSBin(circuitInputs, 0)
+    }
     const witnessCalculator = await builder(wasmBuff)
-
     const wtnsBuff = await witnessCalculator.calculateWTNSBin(circuitInputs, 0)
+    const endWitnessCalc = Date.now()
+    const timeTakenWitnessCalc = (((endWitnessCalc - startWitnessCalc) / numRuns) / 1000).toString()
+
+    const witnessCalcTimeComponent = document.getElementById('witness_calc_' + size)
+    witnessCalcTimeComponent.innerHTML = round(timeTakenWitnessCalc, 3)
+
+    const timeComponent = document.getElementById('groth16_time_' + size)
+    timeComponent.innerHTML = "Please wait..."
 
     // Start timer for Groth16
     const start = Date.now()
@@ -62,32 +79,7 @@ const calculateProofs = async (
 
     const timeTaken = (((end - start) / numRuns) / 1000).toString()
 
-    const timeComponent = document.getElementById('groth16_time_' + size)
     timeComponent.innerHTML = round(timeTaken, 3)
-
-    // Start timer for Plonk
-    const startPlonk = Date.now()
-
-    // TODO: fix this
-    //for (let i = 1; i < numRuns; i++) {
-        //await plonk.prove(new Uint8Array(plonkZkeyBuff), wtnsBuff, null)
-    //}
-
-    // End timer
-    const endPlonk = Date.now()
-    const timeTakenPlonk = (((endPlonk - startPlonk) / numRuns) / 1000).toString()
-    const plonkTimeComponent = document.getElementById('plonk_time_' + size)
-    //plonkTimeComponent.innerHTML = round(timeTakenPlonk, 3)
-    plonkTimeComponent.innerHTML = "Not implemented yet"
-
-    const wasmSizeComponent = document.getElementById('wasm_size_' + size)
-    wasmSizeComponent.innerHTML = round(wasmKb, 2).toString()
-
-    const zkeySizeComponent = document.getElementById('zkey_size_' + size)
-    zkeySizeComponent.innerHTML = round(zkeyKb, 2).toString()
-
-    const plonkZkeySizeComponent = document.getElementById('plonk_zkey_size_' + size)
-    plonkZkeySizeComponent.innerHTML = round(plonkZkeyKb, 2).toString()
 
     const proofForTx = [
         proof.pi_a[0],
@@ -118,6 +110,21 @@ const main = async () => {
     // Build the main table
     const mainDiv = document.getElementById("main")
 
+    const p = document.createElement("p")
+    const genAllBtn = document.createElement("button")
+    genAllBtn.className = "gen_proof_btn"
+    genAllBtn.innerHTML = "Generate all"
+    genAllBtn.addEventListener("click", async () => {
+        setBtnStatus(false)
+        for (let i = start; i < end; i++) {
+            console.log(2**i)
+            await calculateProofs(2**i)
+        }
+        setBtnStatus(true)
+    })
+    p.appendChild(genAllBtn)
+    mainDiv.appendChild(genAllBtn)
+
     // Insert a table into mainDiv
     const table = document.createElement("table")
     mainDiv.appendChild(table)
@@ -136,27 +143,23 @@ const main = async () => {
     theadTr.appendChild(th0)
 
     const thWasmSize = document.createElement("th")
-    thWasmSize.innerHTML = "WASM size (KB)"
+    thWasmSize.innerHTML = "WASM size (MB)"
     theadTr.appendChild(thWasmSize)
 
     const thZkeySize = document.createElement("th")
-    thZkeySize.innerHTML = "Groth16 zkey size (KB)"
+    thZkeySize.innerHTML = "Groth16 zkey size (MB)"
     theadTr.appendChild(thZkeySize)
 
-    const thPlonkZkeySize = document.createElement("th")
-    thPlonkZkeySize.innerHTML = "Plonk zkey size (KB)"
-    theadTr.appendChild(thPlonkZkeySize)
+    const thWitnessCalc = document.createElement("th")
+    thWitnessCalc.innerHTML = "Witness computation (s)"
+    theadTr.appendChild(thWitnessCalc)
 
     const thGroth = document.createElement("th")
     thGroth.innerHTML = "Groth16 proofgen time (s)"
     theadTr.appendChild(thGroth)
 
-    const thPlonk = document.createElement("th")
-    thPlonk.innerHTML = "Plonk proofgen time (s)"
-    theadTr.appendChild(thPlonk)
-
     const th2 = document.createElement("th")
-    th2.innerHTML = "Groth16 valid?"
+    th2.innerHTML = "Groth16 proof valid?"
     theadTr.appendChild(th2)
     thead.appendChild(theadTr)
 
@@ -168,12 +171,15 @@ const main = async () => {
         const tr = document.createElement("tr")
 
         const tdG = document.createElement("td")
-        const bGenProof = document.createElement("button")
-        bGenProof.innerHTML = "Generate proofs"
-        bGenProof.addEventListener("click", () => {
-            calculateProofs(numConstraints)
+        const genProofBtn = document.createElement("button")
+        genProofBtn.className = "gen_proof_btn"
+        genProofBtn.innerHTML = "Generate"
+        genProofBtn.addEventListener("click", async () => {
+            setBtnStatus(false)
+            await calculateProofs(numConstraints)
+            setBtnStatus(true)
         })
-        tdG.appendChild(bGenProof)
+        tdG.appendChild(genProofBtn)
         tr.appendChild(tdG)
         tbody.appendChild(tr)
 
@@ -192,19 +198,14 @@ const main = async () => {
         tr.appendChild(tdZkey)
         tbody.appendChild(tr)
 
-        const tdPlonkZkey = document.createElement("td")
-        tdPlonkZkey.id = "plonk_zkey_size_" + numConstraints
-        tr.appendChild(tdPlonkZkey)
+        const tdWitnessCalc = document.createElement("td")
+        tdWitnessCalc.id = "witness_calc_" + numConstraints
+        tr.appendChild(tdWitnessCalc)
         tbody.appendChild(tr)
 
         const tdTime = document.createElement("td")
         tdTime.id = "groth16_time_" + numConstraints
         tr.appendChild(tdTime)
-        tbody.appendChild(tr)
-
-        const tdPlonkTime = document.createElement("td")
-        tdPlonkTime.id = "plonk_time_" + numConstraints
-        tr.appendChild(tdPlonkTime)
         tbody.appendChild(tr)
 
         const tdValid = document.createElement("td")
@@ -214,5 +215,10 @@ const main = async () => {
     }
 }
 
+const main2 = async () => {
+    let resp = await fetch("http://localhost:8000/main_65536.zkey")
+    const zkeyBuff = await resp.arrayBuffer()
+    console.log(zkeyBuff)
+}
 
 main()

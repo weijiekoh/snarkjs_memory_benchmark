@@ -4,7 +4,7 @@
     "description": "",
     "scripts": {
         "serve": "parcel serve src/index.html",
-        "serve-static": "cp -r ../build/* static && cd static && http-server --cors -p 8000"
+        "serve-static": "cd ../build && http-server --cors -p 8000"
     },
     "author": "weijiekoh",
     "dependencies": {

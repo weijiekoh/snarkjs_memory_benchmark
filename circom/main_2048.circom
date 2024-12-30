@@ -1,3 +1,3 @@
 pragma circom 2.0.0;
-include "multiplier.circom";
-component main = Multiplier(2048);
+include "fib.circom";
+component main = Fib(2048);

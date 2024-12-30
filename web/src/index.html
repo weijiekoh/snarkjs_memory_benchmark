@@ -25,11 +25,28 @@
   <body>
     <h1>snarkjs proof generation benchmarks</h1>
     <p>
-      This tool measures the time it takes to generate a proof for a given
-      circuit size. The circuit is a Fibonacci circuit. Note that it does not
-      measure the time it takes to download the WASM and zkey files. A slight
-      warmup time (0.1s) tends to be incurred upon the first run. The witness
-      generation timings may differ if the changes.
+      This tool measures the time it takes to generate a Groth16 proof for a given
+      circuit size. Note that it does not measure the time it takes to download
+      the WASM and zkey files. A slight warmup time (0.1s) tends to be incurred
+      upon the first run. The circuit takes two field elements as an input, and
+      outputs their Fibonacci sequence over the prime field. The witness
+      generation timings may differ if the circuit changes.
+    </p>
+
+    <p>
+      Glossary:
+      <ul>
+        <li><em># constraints</em>: The number of circuit constraints.</li>
+        <li><em>wasm size</em>: The size of the WASM witness generation binary.</li>
+        <li><em>zkey size</em>: The size of the zkey file, mostly comprised of the proving key.</li>
+        <li><em>Witness computation</em>: The time taken to generate the witness using the WASM binary.</li>
+        <li><em>Proof generation</em>: The time taken to generate the proof.</li>
+        <li><em>Proof valid?</em>: Whether the proof is valid.</li>
+      </ul>
+    </p>
+
+    <p>
+      Source: <a target="_blank" href="https://github.com/weijiekoh/snarkjs_memory_benchmark">https://github.com/weijiekoh/snarkjs_memory_benchmark</a>
     </p>
 
     <!-- To be generated in app.ts -->

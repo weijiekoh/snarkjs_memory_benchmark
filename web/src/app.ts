@@ -147,7 +147,7 @@ const main = async () => {
     theadTr.appendChild(thWasmSize)
 
     const thZkeySize = document.createElement("th")
-    thZkeySize.innerHTML = "Groth16 zkey size (MB)"
+    thZkeySize.innerHTML = "zkey size (MB)"
     theadTr.appendChild(thZkeySize)
 
     const thWitnessCalc = document.createElement("th")
@@ -155,11 +155,11 @@ const main = async () => {
     theadTr.appendChild(thWitnessCalc)
 
     const thGroth = document.createElement("th")
-    thGroth.innerHTML = "Groth16 proofgen time (s)"
+    thGroth.innerHTML = "Proof generation (s)"
     theadTr.appendChild(thGroth)
 
     const th2 = document.createElement("th")
-    th2.innerHTML = "Groth16 proof valid?"
+    th2.innerHTML = "Proof valid?"
     theadTr.appendChild(th2)
     thead.appendChild(theadTr)
 

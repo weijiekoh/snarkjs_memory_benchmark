@@ -3,7 +3,8 @@
 import os
 
 start = 10 # inclusive
-end = 20 # not inclusive
+end = 22 # not inclusive
+# 21 is the limit
 
 def gen_build_dir_path():
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -68,7 +69,7 @@ component main = Fib({num_constraints});
 
 def gen_ppot_filepath():
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(current_dir, "..", "powersOfTau28_hez_final_21.ptau")
+    return os.path.join(current_dir, "..", "powersOfTau28_hez_final_26.ptau")
 
 if __name__ == '__main__':
     build_dir_path = gen_build_dir_path()

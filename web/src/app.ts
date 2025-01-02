@@ -3,7 +3,7 @@ import { groth16 } from 'snarkjs'
 
 const numRuns = 1
 const start = 10
-const end = 20
+const end = 22
 
 let staticPath = '/static/'
 if (process.env.NODE_ENV !== 'production') {
@@ -71,7 +71,7 @@ const calculateProofs = async (
         await groth16.prove(new Uint8Array(zkeyBuff), wtnsBuff, null)
     }
 
-    const { proof, publicSignals } =
+    const { proof, publicSignals, timings } =
         await groth16.prove(new Uint8Array(zkeyBuff), wtnsBuff, null)
 
     // End timer
@@ -80,6 +80,24 @@ const calculateProofs = async (
     const timeTaken = (((end - start) / numRuns) / 1000).toString()
 
     timeComponent.innerHTML = round(timeTaken, 3)
+
+    const abc = document.getElementById('groth16_abc_' + size)
+    abc.innerHTML = JSON.stringify(timings.abc)
+
+    const msmA = document.getElementById('groth16_msm_a_' + size)
+    msmA.innerHTML = JSON.stringify(timings.msmA)
+
+    const msmB1 = document.getElementById('groth16_msm_b1_' + size)
+    msmB1.innerHTML = JSON.stringify(timings.msmB1)
+
+    const msmB2 = document.getElementById('groth16_msm_b2_' + size)
+    msmB2.innerHTML = JSON.stringify(timings.msmB2)
+
+    const msmC = document.getElementById('groth16_msm_c_' + size)
+    msmC.innerHTML = JSON.stringify(timings.msmC)
+
+    const msmH = document.getElementById('groth16_msm_h_' + size)
+    msmH.innerHTML = JSON.stringify(timings.msmH)
 
     const proofForTx = [
         proof.pi_a[0],
@@ -117,8 +135,7 @@ const main = async () => {
     genAllBtn.addEventListener("click", async () => {
         setBtnStatus(false)
         for (let i = start; i < end; i++) {
-            console.log(2**i)
-            await calculateProofs(2**i)
+            await calculateProofs(2 ** i)
         }
         setBtnStatus(true)
     })
@@ -157,6 +174,30 @@ const main = async () => {
     const thGroth = document.createElement("th")
     thGroth.innerHTML = "Proof generation (s)"
     theadTr.appendChild(thGroth)
+
+    const thABC = document.createElement("th")
+    thABC.innerHTML = "ABC (ms)"
+    theadTr.appendChild(thABC)
+
+    const thMsmA = document.createElement("th")
+    thMsmA.innerHTML = "MSM A (ms)"
+    theadTr.appendChild(thMsmA)
+
+    const thMsmB1 = document.createElement("th")
+    thMsmB1.innerHTML = "MSM B1 (ms)"
+    theadTr.appendChild(thMsmB1)
+
+    const thMsmB2 = document.createElement("th")
+    thMsmB2.innerHTML = "MSM B2 (ms)"
+    theadTr.appendChild(thMsmB2)
+
+    const thMsmC = document.createElement("th")
+    thMsmC.innerHTML = "MSM C (ms)"
+    theadTr.appendChild(thMsmC)
+
+    const thMsmH = document.createElement("th")
+    thMsmH.innerHTML = "MSM H (ms)"
+    theadTr.appendChild(thMsmH)
 
     const th2 = document.createElement("th")
     th2.innerHTML = "Proof valid?"
@@ -203,9 +244,39 @@ const main = async () => {
         tr.appendChild(tdWitnessCalc)
         tbody.appendChild(tr)
 
-        const tdTime = document.createElement("td")
-        tdTime.id = "groth16_time_" + numConstraints
-        tr.appendChild(tdTime)
+        const tdGroth16 = document.createElement("td")
+        tdGroth16.id = "groth16_time_" + numConstraints
+        tr.appendChild(tdGroth16)
+        tbody.appendChild(tr)
+
+        const tdAbc = document.createElement("td")
+        tdAbc.id = "groth16_abc_" + numConstraints
+        tr.appendChild(tdAbc)
+        tbody.appendChild(tr)
+
+        const tdMsmA = document.createElement("td")
+        tdMsmA.id = "groth16_msm_a_" + numConstraints
+        tr.appendChild(tdMsmA)
+        tbody.appendChild(tr)
+
+        const tdMsmB1 = document.createElement("td")
+        tdMsmB1.id = "groth16_msm_b1_" + numConstraints
+        tr.appendChild(tdMsmB1)
+        tbody.appendChild(tr)
+
+        const tdMsmB2 = document.createElement("td")
+        tdMsmB2.id = "groth16_msm_b2_" + numConstraints
+        tr.appendChild(tdMsmB2)
+        tbody.appendChild(tr)
+
+        const tdMsmC = document.createElement("td")
+        tdMsmC.id = "groth16_msm_c_" + numConstraints
+        tr.appendChild(tdMsmC)
+        tbody.appendChild(tr)
+
+        const tdMsmH = document.createElement("td")
+        tdMsmH.id = "groth16_msm_h_" + numConstraints
+        tr.appendChild(tdMsmH)
         tbody.appendChild(tr)
 
         const tdValid = document.createElement("td")
@@ -213,12 +284,6 @@ const main = async () => {
         tr.appendChild(tdValid)
         tbody.appendChild(tr)
     }
-}
-
-const main2 = async () => {
-    let resp = await fetch("http://localhost:8000/main_65536.zkey")
-    const zkeyBuff = await resp.arrayBuffer()
-    console.log(zkeyBuff)
 }
 
 main()

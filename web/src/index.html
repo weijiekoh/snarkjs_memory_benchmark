@@ -34,6 +34,11 @@
     </p>
 
     <p>
+      On a mobile device, this page will likely crash at the circuit size of
+      131072, and on a laptop, 2097152 (depending on the device).
+    </p>
+
+    <p>
       Glossary:
       <ul>
         <li><em># constraints</em>: The number of circuit constraints.</li>
@@ -41,6 +46,12 @@
         <li><em>zkey size</em>: The size of the zkey file, mostly comprised of the proving key.</li>
         <li><em>Witness computation</em>: The time taken to generate the witness using the WASM binary.</li>
         <li><em>Proof generation</em>: The time taken to generate the proof.</li>
+        <li><em>ABC</em>: The time taken to run buildABC1() (this has to do with the QAP).</li>
+        <li><em>MSM A</em>: The time taken to perform the G1 MSM to generate point A.</li>
+        <li><em>MSM B1</em>: The time taken to perform the G1 MSM to generate point B1.</li>
+        <li><em>MSM B2</em>: The time taken to perform the G2 MSM to generate point B2.</li>
+        <li><em>MSM C</em>: The time taken to perform the G1 MSM to generate point C.</li>
+        <li><em>MSM H</em>: The time taken to perform the G1 MSM to generate point H.</li>
         <li><em>Proof valid?</em>: Whether the proof is valid.</li>
       </ul>
     </p>

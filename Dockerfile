@@ -6,7 +6,8 @@ RUN apt -y update && \
 WORKDIR /
 RUN git clone https://github.com/weijiekoh/snarkjs.git && \
     cd snarkjs && \
-    git checkout wj/benchmarks
+    git checkout wj/benchmarks && \
+    npm install
 
 WORKDIR /sb
 

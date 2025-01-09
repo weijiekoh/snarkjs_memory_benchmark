@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+cd "$(dirname "$0")"
+
+cd ..
+
 circom -o ./build/ ./circom/main_1024.circom --r1cs --wasm
 
 npx snarkjs plonk setup ./build/main_1024.r1cs ./powersOfTau28_hez_final_17.ptau build/main_1024.plonk.zkey 

@@ -9,7 +9,7 @@
     "author": "weijiekoh",
     "dependencies": {
         "parcel": "2.0.1",
-        "snarkjs": "file:../../snarkjs"
+        "snarkjs": "https://github.com/weijiekoh/snarkjs.git#wj/benchmarks"
     },
     "devDependencies": {
         "constants-browserify": "^1.0.0",

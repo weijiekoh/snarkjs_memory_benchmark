@@ -4,9 +4,6 @@ This repository provides in-browser benchmarks for Groth16 proof generation
 using [snarkjs](https://github.com/iden3/snarkjs) for circuits ranging from
 2^10 to 2^19 constraints, inclusive.
 
-It has been deployed at
-[https://bit.ly/snarkjsgroth16benchmarks](https://bit.ly/snarkjsgroth16benchmarks).
-
 ## Quick start
 
 To run this locally, you need circom 2.0 installed.
